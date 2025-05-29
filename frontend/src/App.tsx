@@ -4,6 +4,7 @@ import WaveformVisualizer from "./components/WaveformVisualizer";
 
 const App: React.FC = () => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [includeClick, setIncludeClick] = useState(true);
   const [bpm, setBpm] = useState(120);
@@ -11,6 +12,8 @@ const App: React.FC = () => {
 
   const startRecording = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    setMediaStream(stream);
+
     const recorder = new MediaRecorder(stream);
     const chunks: Blob[] = [];
 
@@ -30,7 +33,6 @@ const App: React.FC = () => {
     mediaRecorderRef.current = recorder;
     setIsRecording(true);
 
-    // 🔊 クリック音再生
     let interval: NodeJS.Timeout | null = null;
     if (includeClick) {
       interval = setInterval(() => {
@@ -39,13 +41,11 @@ const App: React.FC = () => {
         click.play();
       }, 60_000 / bpm);
 
-      // 60秒で停止
       setTimeout(() => {
         if (interval) clearInterval(interval);
       }, 60_000);
     }
 
-    // 🎤 録音停止も60秒で
     setTimeout(() => stopRecording(), 60_000);
   };
 
@@ -58,7 +58,6 @@ const App: React.FC = () => {
     <div className="p-4 space-y-4">
       <h1 className="text-xl font-bold">Groove Recorder</h1>
 
-      {/* ✅ クリック音含むか */}
       <label className="flex items-center space-x-2">
         <input
           type="checkbox"
@@ -68,7 +67,6 @@ const App: React.FC = () => {
         <span>クリック音を含める</span>
       </label>
 
-      {/* ✅ BPM 設定 */}
       <label className="flex items-center space-x-2">
         <span>BPM:</span>
         <input
@@ -81,7 +79,6 @@ const App: React.FC = () => {
         />
       </label>
 
-      {/* ✅ 録音操作 */}
       <div className="space-x-2">
         <button
           onClick={startRecording}
@@ -99,7 +96,6 @@ const App: React.FC = () => {
         </button>
       </div>
 
-      {/* ✅ 録音プレビュー */}
       {recordedURL && (
         <div>
           <h2 className="font-semibold">録音を再生:</h2>
@@ -114,9 +110,7 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {/* 🔘 単発クリック音確認 */}
-      <WaveformVisualizer stream={mediaRecorderRef.current?.stream || null} />
-
+      <WaveformVisualizer stream={mediaStream} />
       <ClickPlayer />
     </div>
   );
