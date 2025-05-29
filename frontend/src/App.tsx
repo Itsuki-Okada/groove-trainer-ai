@@ -1,4 +1,3 @@
-// frontend/src/App.tsx
 import React, { useRef, useState } from "react";
 import ClickPlayer from "./components/ClickPlayer";
 
@@ -6,6 +5,7 @@ const App: React.FC = () => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [includeClick, setIncludeClick] = useState(true);
+  const [bpm, setBpm] = useState(120);
   const [recordedURL, setRecordedURL] = useState<string | null>(null);
 
   const startRecording = async () => {
@@ -18,25 +18,34 @@ const App: React.FC = () => {
       const blob = new Blob(chunks, { type: "audio/webm" });
       const url = URL.createObjectURL(blob);
       setRecordedURL(url);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "recording.webm";
+      a.click();
     };
 
     recorder.start();
     mediaRecorderRef.current = recorder;
     setIsRecording(true);
 
-    // ⏱️ 自動停止タイマー（例：30秒）
-    setTimeout(() => stopRecording(), 60_000);
-
-    // 🔊 クリック再生（オプション）
+    // 🔊 クリック音再生
+    let interval: NodeJS.Timeout | null = null;
     if (includeClick) {
-      const interval = setInterval(() => {
-        const audio = new Audio("/click.wav");
-        audio.currentTime = 0;
-        audio.play();
-      }, 60000 / 120); // BPM 120 → 0.5秒
+      interval = setInterval(() => {
+        const click = new Audio("/click.wav");
+        click.currentTime = 0;
+        click.play();
+      }, 60_000 / bpm);
 
-      setTimeout(() => clearInterval(interval), 30_000);
+      // 60秒で停止
+      setTimeout(() => {
+        if (interval) clearInterval(interval);
+      }, 60_000);
     }
+
+    // 🎤 録音停止も60秒で
+    setTimeout(() => stopRecording(), 60_000);
   };
 
   const stopRecording = () => {
@@ -48,7 +57,7 @@ const App: React.FC = () => {
     <div className="p-4 space-y-4">
       <h1 className="text-xl font-bold">Groove Recorder</h1>
 
-      {/* 🔘 ④クリック音を録音に含めるか */}
+      {/* ✅ クリック音含むか */}
       <label className="flex items-center space-x-2">
         <input
           type="checkbox"
@@ -58,7 +67,20 @@ const App: React.FC = () => {
         <span>クリック音を含める</span>
       </label>
 
-      {/* ▶️ 録音ボタン */}
+      {/* ✅ BPM 設定 */}
+      <label className="flex items-center space-x-2">
+        <span>BPM:</span>
+        <input
+          type="number"
+          value={bpm}
+          onChange={(e) => setBpm(Number(e.target.value))}
+          min={30}
+          max={300}
+          className="border px-2 py-1 w-20"
+        />
+      </label>
+
+      {/* ✅ 録音操作 */}
       <div className="space-x-2">
         <button
           onClick={startRecording}
@@ -76,7 +98,7 @@ const App: React.FC = () => {
         </button>
       </div>
 
-      {/* 🔊 再生プレビュー */}
+      {/* ✅ 録音プレビュー */}
       {recordedURL && (
         <div>
           <h2 className="font-semibold">録音を再生:</h2>
@@ -91,14 +113,10 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {/* クリックプレビュー */}
+      {/* 🔘 単発クリック音確認 */}
       <ClickPlayer />
     </div>
   );
 };
-const [includeClick, setIncludeClick] = useState(true);
-const [recordedBlobURL, setRecordedBlobURL] = useState<string | null>(null);
-const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-const [bpm, setBpm] = useState(120); // BPM入力
 
 export default App;
