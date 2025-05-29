@@ -25,7 +25,7 @@ const App: React.FC = () => {
     setIsRecording(true);
 
     // ⏱️ 自動停止タイマー（例：30秒）
-    setTimeout(() => stopRecording(), 30_000);
+    setTimeout(() => stopRecording(), 60_000);
 
     // 🔊 クリック再生（オプション）
     if (includeClick) {
