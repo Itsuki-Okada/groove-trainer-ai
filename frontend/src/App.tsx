@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import ClickPlayer from "./components/ClickPlayer";
+import WaveformVisualizer from "./components/WaveformVisualizer";
 
 const App: React.FC = () => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -114,6 +115,8 @@ const App: React.FC = () => {
       )}
 
       {/* 🔘 単発クリック音確認 */}
+      <WaveformVisualizer stream={mediaRecorderRef.current?.stream || null} />
+
       <ClickPlayer />
     </div>
   );
