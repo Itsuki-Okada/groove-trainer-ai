@@ -96,5 +96,9 @@ const App: React.FC = () => {
     </div>
   );
 };
+const [includeClick, setIncludeClick] = useState(true);
+const [recordedBlobURL, setRecordedBlobURL] = useState<string | null>(null);
+const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+const [bpm, setBpm] = useState(120); // BPM入力
 
 export default App;
