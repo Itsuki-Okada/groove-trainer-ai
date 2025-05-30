@@ -1,3 +1,4 @@
+// src/App.tsx
 import React, { useRef, useState } from "react";
 import ClickPlayer from "./components/ClickPlayer";
 import WaveformVisualizer from "./components/WaveformVisualizer";
@@ -41,9 +42,7 @@ const App: React.FC = () => {
         click.play();
       }, 60_000 / bpm);
 
-      setTimeout(() => {
-        if (interval) clearInterval(interval);
-      }, 60_000);
+      setTimeout(() => clearInterval(interval), 60_000);
     }
 
     setTimeout(() => stopRecording(), 60_000);
