@@ -1,4 +1,3 @@
-// frontend/src/components/WaveformVisualizer.tsx
 import React, { useEffect, useRef } from "react";
 
 type Props = {
@@ -10,6 +9,7 @@ const WaveformVisualizer: React.FC<Props> = ({ stream }) => {
 
   useEffect(() => {
     if (!stream) return;
+
     const audioCtx = new AudioContext();
     const analyser = audioCtx.createAnalyser();
     const source = audioCtx.createMediaStreamSource(stream);
@@ -25,11 +25,13 @@ const WaveformVisualizer: React.FC<Props> = ({ stream }) => {
       if (!canvas || !canvasCtx) return;
       requestAnimationFrame(draw);
       analyser.getByteTimeDomainData(dataArray);
+
       canvasCtx.fillStyle = "black";
       canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
       canvasCtx.lineWidth = 2;
       canvasCtx.strokeStyle = "lime";
       canvasCtx.beginPath();
+
       const sliceWidth = canvas.width / bufferLength;
       let x = 0;
       for (let i = 0; i < bufferLength; i++) {
@@ -38,6 +40,7 @@ const WaveformVisualizer: React.FC<Props> = ({ stream }) => {
         i === 0 ? canvasCtx.moveTo(x, y) : canvasCtx.lineTo(x, y);
         x += sliceWidth;
       }
+
       canvasCtx.lineTo(canvas.width, canvas.height / 2);
       canvasCtx.stroke();
     };
