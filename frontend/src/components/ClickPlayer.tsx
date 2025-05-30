@@ -1,21 +1,19 @@
-// frontend/src/components/ClickPreviewButton.tsx
 import React from "react";
 
-const ClickPreviewButton: React.FC = () => {
-  const playClick = () => {
-    const audio = new Audio("/click.wav");
-    audio.currentTime = 0;
-    audio.play();
+const ClickPlayer: React.FC = () => {
+  const handleClick = () => {
+    const click = new Audio("/click.wav");
+    click.play();
   };
 
   return (
     <button
-      onClick={playClick}
-      className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+      onClick={handleClick}
+      className="px-4 py-2 bg-blue-500 text-white rounded"
     >
-      Click音を確認
+      単発クリック音再生
     </button>
   );
 };
 
-export default ClickPreviewButton;
+export default ClickPlayer;
